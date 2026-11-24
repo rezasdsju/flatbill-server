@@ -4,6 +4,10 @@ REST API for FlatBill. It handles buildings, flats, monthly bill generation, pay
 
 > This repository contains the **Express backend** of FlatBill.
 
-## Related Repository
+## Live Links
 
-- [FlatBill Frontend](https://github.com/rezasdsju/housebill-client)
+| Resource | Link |
+|---|---|
+| Live Website | https://flatbill-bd.vercel.app/ |
+| API Base URL | https://flatbill-server.vercel.app/ |
+| Frontend Repository | https://github.com/rezasdsju/flatbill-client |
