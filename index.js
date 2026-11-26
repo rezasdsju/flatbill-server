@@ -244,6 +244,9 @@ app.post('/flat-owner/flats', verifyToken, verifyFlatOwner, async (req, res) => 
       rentalCategory: data.rentalCategory,
       status: data.status ?? "Vacant",
 
+      // Image fields-optional
+      flatImage: data.flatImage ?? null,
+      buildingImage: data.buildingImage ?? null,
       // Optional number fields
       sizeSqFt: optionalNumber(data.sizeSqFt),
       bedrooms: optionalNumber(data.bedrooms),
@@ -331,6 +334,26 @@ app.get('/flat-owner/flats', verifyToken, verifyFlatOwner, async (req, res) => {
     res.send(result)
   } catch (err) {
     console.error('GET /flat-owner/flats failed:', err)
+    res.status(500).send({ message: 'Failed to fetch flats' })
+  }
+})
+
+
+
+app.get('/flat-owner/flats/:id', verifyToken, verifyFlatOwner, async (req, res) => {
+  try {
+    const id = req.params.id
+    const query = {
+      _id: new ObjectId(id),
+      'flatOwner._id': req.user._id
+    }
+    const result = await flats.findOne(query)
+    if (!result) {
+      return res.status(404).send({ message: 'Flat not Found' })
+    }
+    res.send(result)
+  } catch (err) {
+    console.error('GET /flat-owner/flats/:id failed:', err)
     res.status(500).send({ message: 'Failed to fetch flats' })
   }
 })
