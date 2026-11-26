@@ -319,6 +319,23 @@ app.post('/flat-owner/flats', verifyToken, verifyFlatOwner, async (req, res) => 
     });
   }
 })
+
+
+
+app.get('/flat-owner/flats', verifyToken, verifyFlatOwner, async (req, res) => {
+  try {
+    const query = {
+      'flatOwner._id': req.user._id
+    }
+    const result = await flats.find(query).sort({ createdAt: -1 }).toArray()
+    res.send(result)
+  } catch (err) {
+    console.error('GET /flat-owner/flats failed:', err)
+    res.status(500).send({ message: 'Failed to fetch flats' })
+  }
+})
+
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
