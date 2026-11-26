@@ -14,6 +14,11 @@ REST API for FlatBill. It handles buildings, flats, monthly bill generation, pay
 
 ---
 
+### Features
+- JWT authentication using `verifyToken` middleware.
+- Role-based access control using `verifyFlatOwner` middleware.
+- Add new flats under existing buildings or automatically create a building if it doesn't exist.
+
 ## Technologies
 
 | Technology | Purpose |
@@ -69,7 +74,7 @@ Authorization: Bearer <token>
 | POST | `/buildings` | Admin | Creates a building | Planned |
 | GET | `/buildings/my` | Any user | Returns the user's own building | Planned |
 | PATCH | `/buildings/:id` | Admin | Updates building details | Planned |
-| POST | `/flats` | Admin | Adds a flat | Planned |
+| POST | `/flat-owner/flats` | Flat Owner | Adds a flat | Done |
 | GET | `/flats` | Admin | Lists all flats in the building | Planned |
 | PATCH | `/flats/:id` | Admin | Updates a flat, owner or tenant | Planned |
 | DELETE | `/flats/:id` | Admin | Removes a flat | Planned |
