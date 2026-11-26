@@ -99,7 +99,7 @@ export const validateFields = async (
         return value === true || value === "on" || value === "true";
     };
 
-    // Current due amount validation (শুধু পাঠানো হলে বা POST-এ)
+  
     const hasCurrentDue = data.currentDueAmount !== undefined;
     const currentDueAmount = hasCurrentDue ? optionalNumber(data.currentDueAmount) : null;
 
@@ -148,7 +148,7 @@ export const validateFields = async (
         return null;
     }
 
-    // Optional numeric fields validation (শুধু পাঠানো ফিল্ড চেক হবে)
+
     const optionalNumberFields = [
         'sizeSqFt',
         'bedrooms',
