@@ -24,6 +24,7 @@ REST API for FlatBill. It handles buildings, flats, monthly bill generation, pay
 | Technology | Purpose |
 |---|---|
 | Node.js | JavaScript runtime |
+| TypeScript | Backend language and type checking |
 | Express.js | REST API framework |
 | MongoDB | Database |
 | jsonwebtoken | JWT creation and verification |

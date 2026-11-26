@@ -2,9 +2,16 @@
   "name": "housebill-server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
+    "dev": "tsx watch index.ts",
+    "typecheck": "tsc --noEmit",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "nodemonConfig": {
+    "execMap": {
+      "ts": "tsx"
+    }
   },
   "repository": {
     "type": "git",
@@ -25,5 +32,13 @@
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^7.9.1",
     "nodemon": "^3.1.14"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^22.15.30",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
   }
 }
