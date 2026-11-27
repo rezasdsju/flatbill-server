@@ -334,6 +334,20 @@ app.patch('/flat-owner/flats/:id', verifyToken, verifyFlatOwner, async (req, res
 });
 
 
+app.get('/flat-owner/select-tenant', verifyToken, verifyFlatOwner, async (req, res) => {
+  try {
+    const result = await users.find(
+      { role: 'tenant' },
+      { projection: { name: 1, email: 1, phone: 1 } }
+    ).toArray()
+    res.send(result)
+  } catch (err) {
+    console.error('GET /flat-owner/select-tenant failed:', err);
+    res.status(500).send({ message: 'Failed to load tenants' });
+  }
+})
+
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
