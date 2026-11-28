@@ -5,7 +5,7 @@ import 'dotenv/config'
 import { MongoClient, MongoServerError, ObjectId, type Document } from 'mongodb';
 import jwt from 'jsonwebtoken'
 import { validateFields } from './validateField.js';
-
+import type { ITenantRecord } from './types/tenant.js'
 interface UserDocument extends Document {
   _id: ObjectId;
   email: string;
@@ -366,6 +366,84 @@ app.get('/flat-owner/my-tenants', verifyToken, verifyFlatOwner, async (req, res)
   } catch (error) {
     console.error('GET /flat-owner/my-tenants failed:', error)
     res.status(500).send({ message: 'Failed to fetch tenants' })
+  }
+})
+
+
+
+
+
+app.patch('/flat-owner/my-tenants/:id', verifyToken, verifyFlatOwner, async (req, res) => {
+  const rawId = req.params.id
+  const id = Array.isArray(rawId) ? rawId[0] : rawId
+  try {
+    if (!id || !ObjectId.isValid(id)) {
+      return res.status(400).send({ message: 'Invalid ID' })
+    }
+    const { tenantId } = req.body
+    if (!tenantId) {
+      return res.status(400).json({
+        success: false,
+        message: 'TenantID is required'
+      })
+    }
+    const query = {
+      _id: new ObjectId(id),
+      'flatOwner._id': req.user._id
+    }
+    const matchedFlat = await flats.findOne(query)
+    if (!matchedFlat) {
+      return res.status(404).json({
+        success: false,
+        message: 'Falt not found'
+      })
+    }
+    const presentTenants = matchedFlat.presentTenants ?? []
+    const pastTenants = matchedFlat.pastTenants ?? []
+
+    const tenantToMoveOut = presentTenants.find(
+      (tenant: ITenantRecord) => String(tenant._id) === String(tenantId)
+    )
+    if (!tenantToMoveOut) {
+      return res.status(404).json({
+        success: false,
+        message: 'Tenant not found in present tenants',
+      });
+    }
+    const updatedPresentTenants = presentTenants.filter(
+      (tenant: ITenantRecord) => String(tenant._id) !== String(tenantId)
+    )
+    const movedOutRecord = {
+      ...tenantToMoveOut,
+      moveOutDate: new Date().toISOString()
+    }
+    const updatedPastTenants = [...pastTenants, movedOutRecord]
+    const updatedStatus = updatedPresentTenants.length === 0 ? 'Vacant' : matchedFlat.status;
+    const result = await flats.updateOne(query, {
+      $set: {
+        presentTenants: updatedPresentTenants,
+        pastTenants: updatedPastTenants,
+        status: updatedStatus,
+        updatedAt: new Date().toISOString()
+      }
+    })
+    if (result.matchedCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Flat not found',
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: 'Tenant moved out successfully',
+      status: updatedStatus,
+    });
+  } catch (err) {
+    console.error('PATCH /flat-owner/my-tenants/:id failed:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to move out tenant',
+    });
   }
 })
 
