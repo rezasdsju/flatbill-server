@@ -67,6 +67,7 @@ const verifyToken: RequestHandler = async (req, res, next) => {
     }
     const token = authHeader.split(' ')[1]
     const decoded = jwt.verify(token, process.env.JWT_SECRET!)
+    // console.log(decoded)
     if (typeof decoded === 'string' || typeof decoded.email !== 'string') {
       return res.status(401).send({ message: 'Unauthorized access' })
     }
@@ -347,6 +348,26 @@ app.get('/flat-owner/select-tenant', verifyToken, verifyFlatOwner, async (req, r
   }
 })
 
+
+app.get('/flat-owner/my-tenants', verifyToken, verifyFlatOwner, async (req, res) => {
+  try {
+    const query = {
+      'flatOwner._id': req.user._id,
+      presentTenants: { $exists: true, $ne: [] }
+
+    }
+    const result = await flats.find(
+      query,
+      {
+        projection: { presentTenants: 1, flatNumber: 1, floor: 1, buildingName: 1, currentDueAmount: 1 }
+      }
+    ).toArray()
+    res.send(result)
+  } catch (error) {
+    console.error('GET /flat-owner/my-tenants failed:', error)
+    res.status(500).send({ message: 'Failed to fetch tenants' })
+  }
+})
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
